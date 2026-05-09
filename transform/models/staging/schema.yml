@@ -1,0 +1,32 @@
+version: 2
+
+models:
+  - name: stg_caged
+    description: >
+      Dados brutos do CAGED padronizados. Contém um registro por combinação
+      de competência, UF, setor, sexo e escolaridade.
+    columns:
+      - name: data_competencia
+        description: Data de referência (primeiro dia do mês de competência)
+        tests:
+          - not_null
+      - name: uf
+        description: Sigla do estado (ex: SP, RJ, MG)
+        tests:
+          - not_null
+      - name: setor
+        description: Setor econômico da atividade
+        tests:
+          - not_null
+      - name: qtd_admissoes
+        description: Número de admissões no período
+        tests:
+          - not_null
+      - name: qtd_desligamentos
+        description: Número de desligamentos no período
+        tests:
+          - not_null
+      - name: saldo_empregos
+        description: Saldo líquido de empregos (admissões - desligamentos)
+        tests:
+          - not_null

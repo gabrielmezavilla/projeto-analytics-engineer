@@ -1,0 +1,33 @@
+name: 'caged_analytics'
+version: '1.0.0'
+config-version: 2
+
+profile: 'caged_analytics'
+
+model-paths: ["models"]
+test-paths: ["tests"]
+seed-paths: ["seeds"]
+docs-paths: ["docs"]
+
+target-path: "target"
+clean-targets: ["target", "dbt_packages"]
+
+models:
+  caged_analytics:
+    # Staging: leitura e renomeação das fontes brutas
+    # Materializado como view — barato e sempre atualizado
+    staging:
+      +materialized: view
+      +schema: staging
+
+    # Intermediate: lógica de negócio, agregações e joins
+    # Materializado como table — performance para o dashboard
+    intermediate:
+      +materialized: table
+      +schema: intermediate
+
+    # Marts: tabelas finais consumidas pelo dashboard e ferramentas de BI
+    # Materializado como table — entrega garantida
+    marts:
+      +materialized: table
+      +schema: marts

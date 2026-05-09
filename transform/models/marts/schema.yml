@@ -1,0 +1,48 @@
+version: 2
+
+models:
+  - name: mart_visao_geral
+    description: >
+      Visão mensal consolidada do mercado de trabalho brasileiro.
+      Tabela principal do dashboard — KPIs, gráfico de barras e acumulado anual.
+    columns:
+      - name: ano_mes
+        description: Período no formato YYYY-MM
+        tests:
+          - not_null
+          - unique
+      - name: saldo_mensal
+        description: Saldo líquido de empregos no mês
+        tests:
+          - not_null
+      - name: saldo_acumulado_ano
+        description: Soma do saldo desde janeiro do mesmo ano
+
+  - name: mart_estados
+    description: >
+      Métricas agregadas por UF. Alimenta o mapa coroplético e o ranking de estados.
+    columns:
+      - name: uf
+        description: Sigla do estado
+        tests:
+          - not_null
+          - unique
+      - name: classificacao_saldo
+        description: Positivo, Negativo ou Neutro
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['Positivo', 'Negativo', 'Neutro']
+
+  - name: mart_setores
+    description: >
+      Evolução mensal por setor econômico. Alimenta gráficos de linha e barras setoriais.
+    columns:
+      - name: ano_mes
+        description: Período no formato YYYY-MM
+        tests:
+          - not_null
+      - name: setor
+        description: Nome do setor econômico
+        tests:
+          - not_null
