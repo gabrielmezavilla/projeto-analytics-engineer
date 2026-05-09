@@ -97,21 +97,26 @@ streamlit run dashboard/app.py
 
 Este projeto está versionado no GitHub com **push automático** a cada commit. Sempre que você faz alterações, o repositório remoto é atualizado automaticamente.
 
-### Setup inicial (uma vez)
+### Repositório do Projeto
 
+**URL:** https://github.com/gabrielmezavilla/projeto-analytics-engineer
+
+**Acesso rápido:**
 ```bash
-# 1. Executar script de setup (Windows PowerShell)
-.\setup-github.ps1
+# Clonar este repositório (se quiser em outro PC)
+git clone https://github.com/gabrielmezavilla/projeto-analytics-engineer.git
+cd projeto-analytics-engineer
 
-# 2. Criar repositório no GitHub (https://github.com/new)
-#    - Nome: projeto-analytics-engineer (ou outro de sua preferência)
-#    - Escolha: Public (portfólio) ou Private
-
-# 3. Vincular ao remoto (substitua SEU_USUARIO/NOME_REPO)
-git remote add origin https://github.com/SEU_USUARIO/NOME_REPO.git
-git branch -M main
-git push -u origin main
+# Ou acessar no browser
+https://github.com/gabrielmezavilla/projeto-analytics-engineer
 ```
+
+### Setup inicial (já configurado)
+
+Este projeto já está configurado com:
+- ✅ Repositório criado no GitHub (`gabrielmezavilla/projeto-analytics-engineer`)
+- ✅ Git remoto conectado
+- ✅ Push automático via Git hook (`.git/hooks/post-commit`)
 
 ### A partir daí
 
