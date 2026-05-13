@@ -50,7 +50,9 @@ Thumbs.db
 # Data bruta (muito grande)
 data/raw/*
 !data/raw/.gitkeep
+data/processed/*
+!data/processed/.gitkeep
 
 # Cache
-.streamlit/
+.streamlit/secrets.toml
 *.cache

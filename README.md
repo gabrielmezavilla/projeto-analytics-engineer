@@ -1,3 +1,5 @@
+![Dashboard completo](docs/screenshots/01-visao-geral.png)
+
 # Analytics Engineer — Mercado de Trabalho Brasileiro (CAGED)
 
 Projeto end-to-end seguindo as práticas reais de um **Analytics Engineer**: pipeline Python, transformações em camadas com **dbt**, warehouse local com **DuckDB** e dashboard final em **Streamlit**.
@@ -63,6 +65,14 @@ projeto-analytics-engineer/
 - **Análise setorial**: comparativo total e evolução temporal por setor
 - **Filtros interativos**: ano, região e setor
 
+## Screenshots
+
+| Tela | Preview |
+|------|---------|
+| KPIs + evolução mensal | ![KPIs](docs/screenshots/02-kpis.png) |
+| Mapa do Brasil + Top 10 estados | ![Mapa](docs/screenshots/03-estados.png) |
+| Análise setorial | ![Setores](docs/screenshots/04-setores.png) |
+
 ## Marts entregues pelo dbt
 
 | Tabela | Descrição |
@@ -85,10 +95,24 @@ cd transform && dbt test --profiles-dir . --project-dir .
 
 ## Deploy no Streamlit Cloud (grátis)
 
-1. Suba o projeto no GitHub
-2. Acesse [share.streamlit.io](https://share.streamlit.io)
-3. Conecte o repositório e aponte para `dashboard/app.py`
-4. Clique em Deploy
+O projeto está pronto para deploy no [share.streamlit.io](https://share.streamlit.io). Configurações já incluídas no repo:
+
+- `.python-version` fixa Python 3.11
+- `.streamlit/config.toml` define o tema visual
+- `data/processed/.gitkeep` garante que o diretório do DuckDB exista no container
+- `requirements.txt` traz todas as dependências (Streamlit, DuckDB, dbt-core, dbt-duckdb, pandas, plotly)
+
+**Passo a passo:**
+
+1. Acesse [share.streamlit.io](https://share.streamlit.io) e faça login com a conta do GitHub
+2. Clique em **New app** → selecione o repositório `projeto-analytics-engineer`
+3. Configure:
+   - **Branch**: `main`
+   - **Main file path**: `dashboard/app.py`
+4. Em **Advanced settings**, confirme **Python version: 3.11**
+5. Clique em **Deploy** (o primeiro build leva 3–8 min)
+
+No primeiro acesso, o app roda o pipeline completo (ingest → clean → `dbt run`) e materializa os marts dentro do container — você verá o spinner "Rodando pipeline dbt pela primeira vez...". Depois disso, o cache do Streamlit segura os DataFrames.
 
 ## Conceitos de Analytics Engineering aplicados
 
