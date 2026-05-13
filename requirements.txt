@@ -4,7 +4,7 @@ requests==2.32.3
 openpyxl==3.1.2
 
 # Warehouse local
-duckdb==0.10.3
+duckdb==0.10.2
 
 # dbt — transformações (coração do Analytics Engineer)
 dbt-core==1.8.4
