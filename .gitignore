@@ -24,8 +24,8 @@ wheels/
 *.egg
 
 # DuckDB
-*.duckdb
-*.duckdb.wal
+# *.duckdb
+# *.duckdb.wal
 
 # dbt
 target/
