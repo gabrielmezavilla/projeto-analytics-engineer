@@ -73,8 +73,8 @@ Fonte bruta (parquet)
 ### Fase 3 — Dashboard (FEITO)
 - [x] `dashboard/app.py` — lê apenas dos marts, com filtros, KPIs e gráficos
 
-### Fase 4 — Deploy e Portfólio (PRÓXIMOS PASSOS)
-- [ ] Criar repositório no GitHub e fazer `git push`
+### Fase 4 — Deploy e Portfólio (EM ANDAMENTO)
+- [x] Criar repositório no GitHub e fazer `git push` — repo: https://github.com/gabrielmezavilla/projeto-analytics-engineer
 - [ ] Publicar dashboard no [share.streamlit.io](https://share.streamlit.io) (grátis)
 - [ ] Adicionar screenshots no README.md
 - [ ] Publicar no LinkedIn com descrição do stack
