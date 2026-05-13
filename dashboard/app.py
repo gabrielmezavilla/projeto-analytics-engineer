@@ -8,6 +8,7 @@ Execute com:
   streamlit run dashboard/app.py
 """
 
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -30,6 +31,33 @@ st.set_page_config(
 
 # ── Pipeline e dbt ───────────────────────────────────────────────────────────
 
+
+def _python_has_dbt(python_cmd):
+    cmd = list(python_cmd)
+    if len(cmd) == 1:
+        cmd += ["-c", "import dbt"]
+    resultado = subprocess.run(cmd, capture_output=True, text=True)
+    return resultado.returncode == 0
+
+
+def _find_dbt_executable():
+    candidates = [
+        [sys.executable],
+        ["py", "-3.13"],
+        ["C:/Users/gabri/AppData/Local/Programs/Python/Python313/python.exe"],
+        ["C:/Program Files/Python313/python.exe"],
+    ]
+
+    for candidate in candidates:
+        try:
+            if shutil.which(candidate[0]) or Path(candidate[0]).exists():
+                if _python_has_dbt(candidate):
+                    return candidate
+        except Exception:
+            continue
+    return None
+
+
 @st.cache_data
 def rodar_pipeline():
     """Roda ingestão + limpeza + dbt run na primeira execução."""
@@ -43,13 +71,19 @@ def rodar_pipeline():
     df_raw = carregar_dados()
     processar(df_raw)
 
-    # Invoca o dbt via `python -m dbt.cli.main` em vez do binário "dbt" solto.
-    # Isso garante que usamos o mesmo Python da sessão Streamlit e não dependemos
-    # do binário estar no PATH (importante no Streamlit Cloud / containers).
+    python_cmd = _find_dbt_executable()
+    if python_cmd is None:
+        st.error(
+            "Não encontrei um Python com dbt instalado.\n"
+            "Rode o app com Python 3.13, por exemplo:\n"
+            "`py -3.13 -m streamlit run dashboard/app.py`"
+        )
+        st.stop()
+
     try:
         resultado = subprocess.run(
-            [sys.executable, "-m", "dbt.cli.main", "run",
-             "--profiles-dir", ".", "--project-dir", "."],
+            python_cmd + ["-m", "dbt.cli.main", "run",
+                          "--profiles-dir", ".", "--project-dir", "."],
             cwd=TRANSFORM_DIR,
             capture_output=True,
             text=True,
@@ -68,14 +102,38 @@ def rodar_pipeline():
         st.stop()
 
 
+def _db_needs_pipeline() -> bool:
+    if not DB_PATH.exists():
+        return True
+
+    con = None
+    try:
+        con = duckdb.connect(str(DB_PATH), read_only=True)
+        tables = [row[0] for row in con.execute("SHOW TABLES").fetchall()]
+        required = {"mart_visao_geral", "mart_estados", "mart_setores"}
+        return not required.issubset(set(tables))
+    except Exception:
+        return True
+    finally:
+        # Garante que o lock do DuckDB seja liberado mesmo se SHOW TABLES falhar.
+        # Sem isso, um lock pendurado bloqueia o `dbt run` subsequente.
+        if con is not None:
+            con.close()
+
+
 @st.cache_data
 def carregar(schema: str, tabela: str) -> pd.DataFrame:
     con = duckdb.connect(str(DB_PATH), read_only=True)
-    return con.execute(f"SELECT * FROM {schema}.{tabela}").fetchdf()
+    try:
+        return con.execute(f"SELECT * FROM {schema}.{tabela}").fetchdf()
+    finally:
+        # Fecha o lock imediatamente após a leitura. Importante para que o botão
+        # "Reprocessar dados" consiga rodar dbt sem conflito de lock no DuckDB.
+        con.close()
 
 
 # Garante pipeline completo antes de renderizar
-if not DB_PATH.exists():
+if _db_needs_pipeline():
     with st.spinner("Rodando pipeline dbt pela primeira vez..."):
         rodar_pipeline()
 
