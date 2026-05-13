@@ -23,12 +23,12 @@ renamed as (
 
         -- Dimensões geográficas
         upper(trim(estado))         as uf,
-        initcap(trim(regiao))       as regiao,
+        upper(substring(trim(regiao), 1, 1)) || lower(substring(trim(regiao), 2)) as regiao,
 
         -- Dimensões de negócio
-        initcap(trim(setor))        as setor,
-        initcap(trim(sexo))         as sexo,
-        initcap(trim(escolaridade)) as escolaridade,
+        upper(substring(trim(setor), 1, 1)) || lower(substring(trim(setor), 2)) as setor,
+        upper(substring(trim(sexo), 1, 1)) || lower(substring(trim(sexo), 2)) as sexo,
+        upper(substring(trim(escolaridade), 1, 1)) || lower(substring(trim(escolaridade), 2)) as escolaridade,
 
         -- Métricas
         admissoes::integer          as qtd_admissoes,
