@@ -37,18 +37,34 @@ def rodar_pipeline():
     from ingest import carregar_dados
     from clean import processar
 
+    # Garante que o diretório do DuckDB existe (defesa para ambiente efêmero)
+    DB_PATH.parent.mkdir(parents=True, exist_ok=True)
+
     df_raw = carregar_dados()
     processar(df_raw)
 
-    # Roda dbt run (cria os marts no DuckDB)
-    resultado = subprocess.run(
-        ["dbt", "run", "--profiles-dir", ".", "--project-dir", "."],
-        cwd=TRANSFORM_DIR,
-        capture_output=True,
-        text=True,
-    )
+    # Invoca o dbt via `python -m dbt.cli.main` em vez do binário "dbt" solto.
+    # Isso garante que usamos o mesmo Python da sessão Streamlit e não dependemos
+    # do binário estar no PATH (importante no Streamlit Cloud / containers).
+    try:
+        resultado = subprocess.run(
+            [sys.executable, "-m", "dbt.cli.main", "run",
+             "--profiles-dir", ".", "--project-dir", "."],
+            cwd=TRANSFORM_DIR,
+            capture_output=True,
+            text=True,
+        )
+    except FileNotFoundError as e:
+        st.error(f"Não consegui invocar o dbt: {e}")
+        st.stop()
+
     if resultado.returncode != 0:
-        st.error(f"Erro no dbt run:\n{resultado.stderr}")
+        # dbt costuma escrever detalhes úteis no stdout — mostrar ambos
+        st.error(
+            "Erro no dbt run:\n\n"
+            f"**stderr:**\n```\n{resultado.stderr}\n```\n\n"
+            f"**stdout:**\n```\n{resultado.stdout}\n```"
+        )
         st.stop()
 
 
